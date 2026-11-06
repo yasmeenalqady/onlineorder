@@ -2,6 +2,8 @@
 
 TableFlow is a standalone English restaurant-ordering demo built with HTML, CSS, Tailwind CSS, and vanilla JavaScript. It has no application framework, backend, database server, or external runtime API. Vite is used only to run and build the static frontend.
 
+Live site: https://yasmeenalqady.github.io/onlineorder/
+
 ## Run locally
 
 ```powershell
@@ -27,4 +29,4 @@ This is a front-end demonstration, not a production ordering or authentication s
 
 ## Project files
 
-The standalone site is in `frontend/`: the HTML entry point, Tailwind/CSS styles, vanilla JavaScript pages, and sample images.
+The source site is in `frontend/`: the HTML entry point, Tailwind/CSS styles, vanilla JavaScript pages, and sample images. The root `index.html`, `assets/`, and `menu-images/` are the built static files used by GitHub Pages. After changing the source, run `npm run build` in `frontend/` and copy the contents of `frontend/dist/` to the repository root before pushing to `main`.

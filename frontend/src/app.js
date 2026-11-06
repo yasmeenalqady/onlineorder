@@ -5,6 +5,7 @@ import { date, money, statuses, transitions } from './composables/format'
 import { localMessage as message, localRequest as request } from './services/localStore'
 
 const root = document.querySelector('#app')
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '')
 const appState = { toast: '', notice: '', errors: {}, error: '', busy: false, formDraft: {} }
 const englishLabels = new Map([
   ['جرّب تغيير البحث أو العودة إلى القائمة.', 'Try a different search or return to the menu.'],
@@ -191,7 +192,13 @@ const esc = (value = '') => String(value).replace(/[&<>"']/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 })[char])
 const image = (url, alt, classes = '') => `<img src="${esc(url || '/menu-images/default.svg')}" alt="${esc(alt)}" class="${classes}" loading="lazy">`
-const path = () => window.location.pathname.replace(/\/+$/, '') || '/'
+const path = () => {
+  const pathname = window.location.pathname
+  const appPath = basePath && (pathname === basePath || pathname.startsWith(`${basePath}/`))
+    ? pathname.slice(basePath.length)
+    : pathname
+  return appPath.replace(/\/+$/, '') || '/'
+}
 const query = () => new URLSearchParams(window.location.search)
 const pageHeading = (title, extra = '') => `<div class="page-heading"><h1>${title}</h1>${extra}</div>`
 const showToast = (text) => {
@@ -477,6 +484,10 @@ function adminShell(content) {
     const labels = [...englishLabels].sort((a, b) => b[0].length - a[0].length)
     for (const [source, replacement] of labels) html = html.replaceAll(source, replacement)
     html = html.replaceAll('..', '.')
+    if (basePath) {
+      html = html.replaceAll('href="/', `href="${basePath}/`)
+      html = html.replaceAll('src="/', `src="${basePath}/`)
+    }
     root.innerHTML = html
   }
 
@@ -541,6 +552,9 @@ function adminShell(content) {
 
   function navigate(url, replace = false) {
     const target = new URL(url, window.location.origin)
+    if (basePath && target.pathname !== basePath && !target.pathname.startsWith(`${basePath}/`)) {
+      target.pathname = `${basePath}${target.pathname}`
+    }
     if (replace) history.replaceState({}, '', target)
     else history.pushState({}, '', target)
     appState.busy = false
